@@ -1,0 +1,8 @@
+radar:
+  data_port:               # Auto-detected from /dev/ttyUSB* at startup
+  config_port:             # Auto-detected from /dev/ttyUSB* at startup
+  cfg_file: src/radar/profile_3d.cfg
+  data_baud: 921600
+
+logging:
+  output_dir: logs/log1

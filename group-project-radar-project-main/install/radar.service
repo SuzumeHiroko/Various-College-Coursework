@@ -1,0 +1,19 @@
+[Unit]
+Description=Radar Point Cloud Viewer and Controller
+After=graphical.target
+Wants=graphical.target
+
+[Service]
+Type=simple
+User=__USER__
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=__HOME__/.Xauthority
+WorkingDirectory=__PROJECT_DIR__
+ExecStart=__VENV_DIR__/bin/python __PROJECT_DIR__/src/main.py --data-port /dev/ttyUSB1 --config-port /dev/ttyUSB0
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical.target

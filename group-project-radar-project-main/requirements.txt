@@ -1,0 +1,10 @@
+matplotlib==3.10.8
+numpy==2.4.2
+pyserial==3.5
+pyyaml>=6.0
+opencv-python
+paho-mqtt
+pytest
+pytest-cov
+flake8
+black
