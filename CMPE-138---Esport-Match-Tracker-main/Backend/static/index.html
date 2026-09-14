@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Esports Match Tracker</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <style>
+      body {
+        background-color: beige;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        gap: 5px;
+        padding: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        background: black;
+      }
+      .item {
+        padding: 10px 16px;
+        background: #f1f1f1;
+        font-size: 20px;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      .item ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #111;
+        color: #fff;
+      }
+      .auth-area {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        border: 0;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #2563eb;
+        color: #fff;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #fff;
+        border: 1px solid #444;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      /* for table */
+      .table_container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        margin-top: 0;
+      }
+
+      .controls {
+        margin: 20px 0;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        color: #666;
+        font-style: italic;
+      }
+
+      .error {
+        color: #dc3545;
+        background-color: #f8d7da;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+
+      .results {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .data-item {
+        padding: 10px;
+        margin: 5px 0;
+        background: white;
+        border-left: 3px solid #007bff;
+        border-radius: 3px;
+      }
+
+      input,
+      select {
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+        display:flex;
+        justify-content: space-between;
+        align-items:center;
+        padding: 8px 12px;
+        background:#111;
+        color:#fff;
+      }
+      .auth-area {
+        margin-left:auto;
+        display:flex;
+        gap:8px;
+        align-items:center;
+      }
+      .btn {
+        border:0; padding:6px 10px; border-radius:6px; cursor:pointer;
+      }
+      .btn-primary { background:#2563eb; color:#fff; }
+      .btn-ghost { background:transparent; color:#fff; border:1px solid #444; }
+      .hidden { display:none !important; }
+
+       /* simple modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal {
+        background: #fff;
+        color: #111;
+        width: 320px;
+        padding: 16px;
+        border-radius: 10px;
+      }
+      .modal h3 {
+        margin: 0 0 10px 0;
+      }
+      .modal .row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .modal input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      .modal-backdrop {
+        position:fixed; inset:0; background:rgba(0,0,0,.5);
+        display:none; align-items:center; justify-content:center; z-index:1000;
+      }
+      .modal { background:#fff; color:#111; width:320px; padding:16px; border-radius:10px; }
+      .modal h3 { margin:0 0 10px 0; }
+      .modal .row { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+      .modal input { padding:8px; border:1px solid #ccc; border-radius:6px; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Esports Match Tracker</div>
+      <div class="auth-area">
+        <span id="auth-status" class="hidden"></span>
+        <button id="btn-login" class="btn btn-primary">Log in</button>
+        <button id="btn-logout" class="btn btn-ghost hidden">Log out</button>
+      </div>
+    </header>
+    <div id="login-modal" class="modal-backdrop">
+      <div class="modal">
+        <h3>Log in</h3>
+        <div class="row">
+          <label>Username</label>
+          <input id="login-username" />
+        </div>
+        <div class="row">
+          <label>Password</label>
+          <input id="login-password" type="password" />
+        </div>
+        <div id="login-error" style="color: #b91c1c; margin-top: 8px"></div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+          "
+        >
+          <button id="open-register-from-login" class="btn">Register</button>
+          <div style="display: flex; gap: 8px">
+            <button id="login-cancel" class="btn">Cancel</button>
+            <button id="login-submit" class="btn btn-primary">Log in</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register-modal" class="modal-backdrop">
+      <div class="modal">
+        <h3>Create Your Account</h3>
+        <div class="row">
+          <label>Username</label>
+          <input id="register-username" />
+        </div>
+        <div class="row">
+          <label>Password</label>
+          <input id="register-password" type="password" />
+        </div>
+        <div id="register-error" style="color: #b91c1c; margin-top: 8px"></div>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+          "
+        >
+          <button id="register-cancel" class="btn">Back</button>
+          <button id="register-submit" class="btn btn-primary">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <section
+      id="admin-panel"
+      class="hidden"
+      style="
+        margin: 16px 0;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+      "
+    >
+      <h3>Admin: Manage entries</h3>
+
+      <!-- INSERT -->
+      <details>
+        <summary><b>Insert entry</b></summary>
+        <div style="margin-top: 8px">
+          <label
+            >Table name: <input id="ins-table" placeholder="e.g. game"
+          /></label>
+          <br />
+          <label>Entry JSON:</label>
+          <textarea
+            id="ins-json"
+            style="width: 100%; height: 100px"
+            placeholder='{"game_id":"G100","game_name":"New Game","game_team_size":5}'
+          ></textarea>
+          <br />
+          <button id="ins-run" class="btn btn-primary">Insert</button>
+          <span id="ins-msg"></span>
+        </div>
+      </details>
+
+      <!-- UPDATE -->
+      <details>
+        <summary><b>Update entry</b></summary>
+        <div style="margin-top: 8px">
+          <label
+            >Table name: <input id="upd-table" placeholder="e.g. game"
+          /></label>
+          <br />
+          <label
+            >Primary key value: <input id="upd-id" placeholder="e.g. G001"
+          /></label>
+          <br />
+          <label>Update JSON (columns):</label>
+          <textarea
+            id="upd-json"
+            style="width: 100%; height: 100px"
+            placeholder='{"game_team_size":6}'
+          ></textarea>
+          <br />
+          <button id="upd-run" class="btn btn-primary">Update</button>
+          <span id="upd-msg"></span>
+        </div>
+      </details>
+
+      <!-- DELETE -->
+      <details>
+        <summary><b>Delete entry</b></summary>
+        <div style="margin-top: 8px">
+          <label
+            >Table name: <input id="del-table" placeholder="e.g. game"
+          /></label>
+          <br />
+          <label
+            >Primary key value: <input id="del-id" placeholder="e.g. G001"
+          /></label>
+          <br />
+          <button
+            id="del-run"
+            class="btn btn-primary"
+            style="background: #b91c1c"
+          >
+            Delete
+          </button>
+          <span id="del-msg"></span>
+        </div>
+      </details>
+    </section>
+    <h1></h1>
+    <label for="game_select">Choose a game:</label>
+    <select id="game_select">
+      <option disabled selected>Select a game…</option>
+    </select>
+    <h2 id="game_header"></h2>
+    <div class="container">
+      <div class="item">
+        <strong>Teams</strong>
+        <ul id="teams-list"></ul>
+      </div>
+      <div class="item">
+        <strong>Players</strong>
+        <ul id="players-list"></ul>
+      </div>
+      <div class="item">
+        <strong>Tournaments</strong>
+        <ul id="tournaments-list"></ul>
+      </div>
+      <div class="item">
+        <strong>Organizers</strong>
+        <ul id="organizers-list"></ul>
+      </div>
+    </div>
+    <!--
+      TODO:
+      1. ADD HIDDEN BUTTONS ON EACH DATA ITEM TO COLLAPSE OTHER ITEMS AND 
+      DISPLAY ALL TABLES RELATED TO CLICKED ITEMS
+    -->
+    <!-- table_container -->
+
+    <div class="table_container">
+      <h1>Table View</h1>
+      <div class="controls">
+        <label for="select_view">View:</label>
+        <select id="select_view">
+          <option value="Upcoming_Tournaments" selected>
+            Upcoming Tournaments
+          </option>
+          <option value="Tournament_Format">Tournament By Format</option>
+          <option value="Tournament_Placements">
+            Tournament Team Placements
+          </option>
+          <option value="Tournament_Matches">Tournament Matches</option>
+          <option value="Tournament_Teams">Tournament Teams</option>
+          <option value="Team_Wins">Team Wins</option>
+        </select>
+      </div>
+      <div class="view">
+        <label for="search">Search Bar:</label>
+        <input
+          type="text"
+          id="search"
+          placeholder="Tournament, Team, Game, etc"
+        />
+        <button id="search_btn">Search</button>
+        <label for="table">Table:</label>
+        <div class="table" id="table"></div>
+      </div>
+    </div>
+
+    <script>
+      (async () => {
+        const url = "http://127.0.0.1:5000/getTable";
+        const select = document.getElementById("game_select");
+
+        try {
+          const resp = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ table_name: "Game" }),
+          });
+
+          if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
+
+          const payload = await resp.json();
+
+          const games = Array.isArray(payload)
+            ? payload
+            : Array.isArray(payload.rows)
+            ? payload.rows
+            : Array.isArray(payload.data)
+            ? payload.data
+            : [payload];
+
+          if (games.length === 0) {
+            select.innerHTML =
+              "<option disabled selected>No games found</option>";
+            return;
+          }
+
+          for (const g of games) {
+            const name = g.game_name ?? g.name ?? g.title ?? "";
+            const id = g.game_id ?? g.id ?? name;
+            if (!name) continue;
+
+            select.add(new Option(name, id));
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      })();
+    </script>
+
+    <script>
+      // utility to render <li> items from an array and a display function
+      function renderList(listEl, rows, displayFn) {
+        listEl.innerHTML = ""; // clear previous
+        if (!rows || rows.length === 0) {
+          listEl.innerHTML = "<li style='opacity:.7'>None</li>";
+          return;
+        }
+        const frag = document.createDocumentFragment();
+        for (const r of rows) {
+          const li = document.createElement("li");
+          li.textContent = displayFn(r);
+          frag.appendChild(li);
+        }
+        listEl.appendChild(frag);
+      }
+
+      async function loadGameRelated(gameId, gameName) {
+        // set the header
+        document.getElementById("game_header").textContent =
+          gameName || "Select a game…";
+
+        const teamsEl = document.getElementById("teams-list");
+        const playersEl = document.getElementById("players-list");
+        const tournEl = document.getElementById("tournaments-list");
+        const orgEl = document.getElementById("organizers-list");
+
+        // show loading indicators
+        for (const el of [teamsEl, playersEl, tournEl, orgEl]) {
+          el.innerHTML = "<li>Loading…</li>";
+        }
+
+        try {
+          const resp = await fetch("http://127.0.0.1:5000/byGame", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ game_id: gameId }),
+          });
+          if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
+          const data = await resp.json();
+
+          // render lists
+          renderList(teamsEl, data.teams, (t) => t.team_name ?? t.team_id);
+          renderList(
+            playersEl,
+            data.players,
+            (p) => p.player_username ?? p.player_id
+          );
+          renderList(
+            tournEl,
+            data.tournaments,
+            (t) => t.tournament_name ?? t.tournament_id
+          );
+          renderList(
+            orgEl,
+            data.organizers,
+            (o) => o.organizer_organization ?? o.organizer_id
+          );
+        } catch (e) {
+          for (const el of [teamsEl, playersEl, tournEl, orgEl]) {
+            el.innerHTML = `<li style="color:crimson">Error: ${e.message}</li>`;
+          }
+          console.error(e);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const gameSelector = document.getElementById("game_select");
+
+        // when user picks a game, fetch related items and render
+        gameSelector.addEventListener("change", function () {
+          const sel = gameSelector.selectedOptions[0];
+          if (!sel || !sel.value) return;
+          loadGameRelated(sel.value, sel.text);
+        });
+      });
+    </script>
+    <script>
+      // table_container
+      const selectView = document.getElementById("select_view");
+      const searchInput = document.getElementById("search");
+      const searchBtn = document.getElementById("search_btn");
+
+      // Function to fetch and display data
+      async function fetchData(endpoint, searchValue = "") {
+        const tableDiv = document.getElementById("table");
+
+        try {
+          // Show loading state
+          tableDiv.innerHTML = '<p class="loading">Loading...</p>';
+
+          // Prepare request options
+          const requestOptions = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              search: searchValue,
+            }),
+          };
+
+          // Fetch data from API
+          const response = await fetch(endpoint, requestOptions);
+          console.log("Response status:", response.status);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error("Error response:", errorData);
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log(data);
+
+          // Display results in table
+          createTable(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          tableDiv.innerHTML = `<div class="error">Error loading data: ${error.message}</div>`;
+        }
+      }
+
+      selectView.addEventListener("change", async function () {
+        const view = this.value;
+        let input = searchInput.value;
+        let endpoint;
+
+        switch (view) {
+          case "Upcoming_Tournaments":
+            input = new Date().toISOString().slice(0, 19).replace("T", " ");
+            console.log("Formatted date:", input);
+            endpoint = "/upcomingTournaments";
+            break;
+          case "Tournament_Format":
+            endpoint = "/getFormat";
+            break;
+          case "Tournament_Placements":
+            endpoint = "/getPlacementPoints";
+            break;
+          case "Tournament_Matches":
+            endpoint = "/getMatchesInTournament";
+            break;
+          case "Tournament_Teams":
+            endpoint = "/getTeamsInTournament";
+            break;
+          case "Team_Wins":
+            endpoint = "/getTeamWins";
+            break;
+          default:
+            endpoint = null;
+            console.warn("Unknown view:", view);
+        }
+
+        if (endpoint) {
+          await fetchData(`http://127.0.0.1:5000${endpoint}`, input);
+        }
+      });
+
+      searchBtn.addEventListener("click", async function () {
+        const view = selectView.value;
+        const input = searchInput.value;
+        let endpoint;
+
+        switch (view) {
+          case "Upcoming_Tournaments":
+            input = new Date().toISOString().slice(0, 19).replace("T", " ");
+            console.log("Formatted date:", input);
+            endpoint = "/upcomingTournaments";
+            break;
+          case "Tournament_Format":
+            endpoint = "/getFormat";
+            break;
+          case "Tournament_Placements":
+            endpoint = "/getPlacementPoints";
+            break;
+          case "Tournament_Matches":
+            endpoint = "/getMatchesInTournament";
+            break;
+          case "Tournament_Teams":
+            endpoint = "/getTeamsInTournament";
+            break;
+          case "Team_Wins":
+            endpoint = "/getTeamWins";
+            break;
+          default:
+            endpoint = null;
+            console.warn("Unknown view:", view);
+        }
+
+        if (endpoint) {
+          await fetchData(endpoint, input);
+        }
+      });
+
+      function createTable(data) {
+        const tableDiv = document.getElementById("table");
+        if (!data || data.length === 0) {
+          tableDiv.innerHTML = "<p>No Entries Found</p>";
+          return;
+        }
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+
+        const headers = Object.keys(data[0]);
+
+        const headerRow = document.createElement("tr");
+        headers.forEach((header) => {
+          const th = document.createElement("th");
+          th.textContent = header
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+
+        data.forEach((row) => {
+          const tr = document.createElement("tr");
+          headers.forEach((header) => {
+            const td = document.createElement("td");
+            td.textContent = row[header] || "-";
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        tableDiv.innerHTML = "";
+        tableDiv.appendChild(table);
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const input = new Date().toISOString().slice(0, 19).replace("T", " ");
+        fetchData("http://127.0.0.1:5000/upcomingTournaments", input);
+      });
+    </script>
+    <script>
+      // ----- helpers -----
+      const API = ""; // change to "" if same-origin
+      const withCreds = (init = {}) => ({ credentials: "include", ...init });
+
+      function show(el) {
+        el.classList.remove("hidden");
+      }
+      function hide(el) {
+        el.classList.add("hidden");
+      }
+
+      // ----- auth UI wiring -----
+      const statusEl = document.getElementById("auth-status");
+      const btnLogin = document.getElementById("btn-login");
+      const btnLogout = document.getElementById("btn-logout");
+      const adminPanel = document.getElementById("admin-panel");
+
+      const loginModal = document.getElementById("login-modal");
+      const loginUser = document.getElementById("login-username");
+      const loginPass = document.getElementById("login-password");
+      const loginSubmit = document.getElementById("login-submit");
+      const loginCancel = document.getElementById("login-cancel");
+      const loginError = document.getElementById("login-error");
+
+      const registerModal = document.getElementById("register-modal");
+      const registerUser = document.getElementById("register-username");
+      const registerPass = document.getElementById("register-password");
+      const registerSubmit = document.getElementById("register-submit");
+      const registerCancel = document.getElementById("register-cancel");
+      const registerError = document.getElementById("register-error");
+
+      function openRegister() {
+        registerError.textContent = "";
+        registerUser.value = "";
+        registerPass.value = "";
+        registerModal.style.display = "flex";
+        registerUser.focus();
+      }
+
+      function closeRegister() {
+        registerModal.style.display = "none";
+      }
+
+      function openLogin() {
+        loginError.textContent = "";
+        loginUser.value = "";
+        loginPass.value = "";
+        loginModal.style.display = "flex";
+        loginUser.focus();
+      }
+      function closeLogin() {
+        loginModal.style.display = "none";
+      }
+
+      btnLogin.addEventListener("click", openLogin);
+      loginCancel.addEventListener("click", closeLogin);
+
+      const openRegisterFromLogin = document.getElementById(
+        "open-register-from-login"
+      );
+      if (openRegisterFromLogin) {
+        openRegisterFromLogin.addEventListener("click", function () {
+          closeLogin();
+          openRegister();
+        });
+      }
+
+      registerCancel.addEventListener("click", function () {
+        closeRegister();
+        openLogin();
+      });
+
+      async function refreshAuth() {
+        try {
+          const resp = await fetch(`${API}/me`, withCreds());
+          const data = await resp.json();
+          if (data.authenticated) {
+            statusEl.textContent = `${data.user.username} (${data.user.role})`;
+            show(statusEl);
+            hide(btnLogin);
+            show(btnLogout);
+            if (data.user.role === "admin") show(adminPanel);
+            else hide(adminPanel);
+          } else {
+            statusEl.textContent = "";
+            hide(statusEl);
+            show(btnLogin);
+            hide(btnLogout);
+            hide(adminPanel);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      loginSubmit.addEventListener("click", async () => {
+        loginError.textContent = "";
+        try {
+          const resp = await fetch(
+            `${API}/login`,
+            withCreds({
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: loginUser.value.trim(),
+                password: loginPass.value,
+              }),
+            })
+          );
+          const data = await resp.json();
+          if (!resp.ok) {
+            loginError.textContent = data.error || "Login failed";
+            return;
+          }
+          closeLogin();
+          await refreshAuth();
+        } catch (e) {
+          loginError.textContent = e.message;
+        }
+      });
+
+      btnLogout.addEventListener("click", async () => {
+        try {
+          await fetch(`${API}/logout`, withCreds({ method: "POST" }));
+          await refreshAuth();
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      // ----- Admin actions wiring -----
+      const insRun = document.getElementById("ins-run");
+      const insTable = document.getElementById("ins-table");
+      const insJson = document.getElementById("ins-json");
+      const insMsg = document.getElementById("ins-msg");
+
+      insRun.addEventListener("click", async () => {
+        insMsg.textContent = "";
+        let entry;
+        try {
+          entry = JSON.parse(insJson.value);
+        } catch (e) {
+          insMsg.textContent = "Invalid JSON";
+          return;
+        }
+        try {
+          const resp = await fetch(
+            `${API}/insertEntry`,
+            withCreds({
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                table_name: insTable.value.trim(),
+                entry,
+              }),
+            })
+          );
+          const data = await resp.json();
+          insMsg.textContent = resp.ok
+            ? `Inserted id: ${data.id ?? "(OK)"}`
+            : data.error || "Insert failed";
+        } catch (e) {
+          insMsg.textContent = e.message;
+        }
+      });
+
+      const updRun = document.getElementById("upd-run");
+      const updTable = document.getElementById("upd-table");
+      const updId = document.getElementById("upd-id");
+      const updJson = document.getElementById("upd-json");
+      const updMsg = document.getElementById("upd-msg");
+
+      updRun.addEventListener("click", async () => {
+        updMsg.textContent = "";
+        let update_colms;
+        try {
+          update_colms = JSON.parse(updJson.value);
+        } catch (e) {
+          updMsg.textContent = "Invalid JSON";
+          return;
+        }
+        try {
+          const resp = await fetch(
+            `${API}/updateEntry`,
+            withCreds({
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                table_name: updTable.value.trim(),
+                id: updId.value.trim(),
+                update_colms,
+              }),
+            })
+          );
+          const data = await resp.json();
+          updMsg.textContent = resp.ok
+            ? `Rows affected: ${data.rows_affected}`
+            : data.error || "Update failed";
+        } catch (e) {
+          updMsg.textContent = e.message;
+        }
+      });
+
+      const delRun = document.getElementById("del-run");
+      const delTable = document.getElementById("del-table");
+      const delId = document.getElementById("del-id");
+      const delMsg = document.getElementById("del-msg");
+
+      delRun.addEventListener("click", async () => {
+        delMsg.textContent = "";
+        try {
+          const resp = await fetch(
+            `${API}/deleteEntry`,
+            withCreds({
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                table_name: delTable.value.trim(),
+                id: delId.value.trim(),
+              }),
+            })
+          );
+          const data = await resp.json();
+          delMsg.textContent = resp.ok
+            ? `Rows affected: ${data.rows_affected}`
+            : data.error || "Delete failed";
+        } catch (e) {
+          delMsg.textContent = e.message;
+        }
+      });
+
+      // Check auth on load
+      document.addEventListener("DOMContentLoaded", refreshAuth);
+
+      registerSubmit.addEventListener("click", async function () {
+        registerError.textContent = "";
+        try {
+          const resp = await fetch(
+            `${API}/register`,
+            withCreds({
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: registerUser.value.trim(),
+                password: registerPass.value,
+              }),
+            })
+          );
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            registerError.textContent = data.error || "Registration failed";
+            return;
+          }
+
+          // optional: auto-login right after successful registration
+          try {
+            const loginResp = await fetch(
+              `${API}/login`,
+              withCreds({
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  username: registerUser.value.trim(),
+                  password: registerPass.value,
+                }),
+              })
+            );
+            await loginResp.json();
+          } catch (e) {
+            console.error(e);
+          }
+
+          closeRegister();
+          await refreshAuth();
+        } catch (e) {
+          registerError.textContent = e.message;
+        }
+      });
+
+      btnLogout.addEventListener("click", async () => {
+        try {
+          await fetch(`${API}/logout`, withCreds({ method: "POST" }));
+          await refreshAuth();
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      // Check auth on load
+      document.addEventListener("DOMContentLoaded", refreshAuth);
+    </script>
+  </body>
+</html>
